@@ -155,18 +155,19 @@ div.guestBook-entry {
 					<label for="email"><?php echo t('Email')?>:</label><?php echo (isset($errors['email'])?"<span class=\"error\">".$errors['email']."</span>":"")?><br />
 					<input type="text" name="email" value="<?php echo $Entry->user_email ?>" /> <span class="note">(<?php echo t('Your email will not be publicly displayed.')?>)</span> <br />
 				<?php  } ?>
-					
-				<?php  /*
+		 <?php			
+			/* 
 				<label for="rating"><?php echo t('Rating')?>:</label><?php echo (isset($errors['rating'])?"<span class=\"error\">".$errors['rating']."</span>":"")?><br />
 				<input type="text" name="rating" value="<?php echo $Entry->rating ?>" /><br />
-				*/ ?>
+			*/	 ?>
+				
 				
 				<label for="rating"><?php echo t('Rating')?>:</label><?php echo (isset($errors['rating'])?"<span class=\"error\">".$errors['rating']."</span>":"")?><br />
 				<?php  
 				$rt = Loader::helper('rating'); 
-				if($Entry->rating==-1 || !isset($Entry->rating)) $Entry->rating=60; 
-				echo $rt->output('rating', intval($Entry->rating), true, false);
-				?> 
+				if($Entry->rating==-1 || !isset($Entry->rating)) $Entry->rating=95; 
+				echo $rt->output('rating', intval($Entry->rating), true, true);
+			    ?> 
 				<br />
 							
 				<?php echo (isset($errors['commentText'])?"<br /><span class=\"error\">".$errors['commentText']."</span>":"")?>
