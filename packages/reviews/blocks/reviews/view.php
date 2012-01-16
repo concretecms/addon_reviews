@@ -166,7 +166,7 @@ div.guestBook-entry {
 				<?php  
 				$rt = Loader::helper('rating'); 
 				if($Entry->rating==-1 || !isset($Entry->rating)) $Entry->rating=95; 
-				echo $rt->output('rating', intval($Entry->rating), true, true);
+				echo $rt->output('rating', intval($Entry->rating),true, false);
 			    ?> 
 				<br />
 							

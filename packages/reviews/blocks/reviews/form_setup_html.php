@@ -1,12 +1,15 @@
 <?php
 defined('C5_EXECUTE') or die(_("Access Denied."));
 ?>
+  
 <fieldset class="form-stacked">
 
 <div class="clearfix">
 <?php echo $form->label('title', t('Title'));?>
 <div class="input">
-<?php echo $form->text('title',$title);?>
+
+<?php echo $form->text('title',$title );?>
+<?php //echo $form->text('title','reviews');?>
 </div>
 
 <div class="clearfix">
@@ -57,5 +60,6 @@ defined('C5_EXECUTE') or die(_("Access Denied."));
 </div><!--clearfix --> 
 
 </fieldset> 
+
 
 
