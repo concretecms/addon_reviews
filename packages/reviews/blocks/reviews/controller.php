@@ -22,7 +22,7 @@
  *
  */
 defined('C5_EXECUTE') or die(_("Access Denied."));
-class ReviewsBlockController extends BlockController {		
+class ReviewsBlockController extends BlockController {
 	protected $btTable = 'btReviews';
 	protected $btInterfaceWidth = "400";
 	protected $btInterfaceHeight = "265";		
@@ -38,22 +38,13 @@ class ReviewsBlockController extends BlockController {
 	
 	public function getBlockTypeName() {
 		return t("Reviews");
-	}		
-	
-	public function __construct($obj = NULL){
-		$res = parent::__construct($obj);
-		$html = Loader::helper('html');	
-		$this->addHeaderItem($html->javascript('jquery.metadata.js'));		 
-		$this->addHeaderItem($html->javascript('jquery.rating.js'));
-		$this->addHeaderItem($html->css('jquery.ui.css'));
-		$this->addHeaderItem($html->css('jquery.rating.css'));
-		return $res;
 	}
 	
-	public function on_start(){
-		$html = Loader::helper('html');			
-		
-		//$this->addHeaderItem($html->css('jquery.rating.css'));
+	public function on_page_view() {
+		$html = Loader::helper('html');	
+		$this->addHeaderItem($html->javascript('jquery.rating.js'));
+		$this->addHeaderItem($html->css('jquery.ui.css'));
+		$this->addHeaderItem($html->css('jquery.rating.css'));	
 	}	
 		
 	function delete() {
@@ -64,8 +55,7 @@ class ReviewsBlockController extends BlockController {
 		}
 		$E = new ReviewsBlockEntry($this->bID);
 		$bo = $this->getBlockObject();
-		global $c;
-		$E->removeAllEntries( $c->getCollectionID() );
+		$E->removeAllEntries($this->getCollectionObject()->getCollectionID() );
 		parent::delete();
 	}
 	
@@ -136,7 +126,7 @@ class ReviewsBlockController extends BlockController {
 
 		// get the cID from the block Object
 		$bo = $this->getBlockObject();
-		global $c;
+		$c = $this->getCollectionObject();
 		$cID = $c->getCollectionID();
 	
 		$v = Loader::helper('validation/strings');

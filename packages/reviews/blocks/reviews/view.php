@@ -94,7 +94,7 @@ div.guestBook-entry {
 			<?php  if($bp->canWrite()) { ?> 
 					<div class="guestBook-manage-links">
 						<a href="<?php echo $this->action('loadEntry')."&entryID=".$p['entryID'];?>#guestBookForm"><?php echo t('Edit')?></a> | 
-						<a href="<?php echo $this->action('removeEntry')."&entryID=".$p['entryID'];?>" onclick="return confirm('<?php echo t("Are you sure you would like to remove this comment?")?>');"><?php echo t('Remove')?></a> |
+						<a href="<?php echo $this->action('removeEntry')."&entryID=".$p['entryID'];?>" onclick="return confirm('<?php echo t("Are you sure you would like to remove this review?")?>');"><?php echo t('Remove')?></a> |
 						<?php  if($p['approved']) { ?>
 							<a href="<?php echo $this->action('unApproveEntry')."&entryID=".$p['entryID'];?>"><?php echo t('Un-Approve')?></a>
 						<?php  } else { ?>
