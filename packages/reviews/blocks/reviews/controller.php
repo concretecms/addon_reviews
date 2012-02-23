@@ -305,9 +305,10 @@ class ReviewsBlockController extends BlockController {
 	}
 	
 	public function calculateAverageRating(){ 	
-		$db = Loader::db();		
-		$q = 'SELECT avg(rating) as count FROM btReviewsEntries WHERE bID = ? AND approved=1 AND rating>=0 AND rating<=100';				
-		$v = Array(intval($this->bID) );
+		$db = Loader::db();	
+		$cID = Page::getCurrentPage()->getCollectionID();
+		$q = 'SELECT avg(rating) as count FROM btReviewsEntries WHERE bID = ? AND cID = ? AND approved=1 AND rating>=0 AND rating<=100';				
+		$v = Array(intval($this->bID), intval($cID) );
 		$averageRating = $db->getOne($q,$v);
 		$this->averageRating=(intval($averageRating)>0) ? round($averageRating/10)*10 : 0;
 		return $this->averageRating;
@@ -379,8 +380,8 @@ class ReviewsBlockEntry {
 	*/
 	function loadData($entryID) {
 		$db = Loader::db();
-		$data = $db->getRow("SELECT * FROM btReviewsEntries WHERE entryID=? AND bID=?",array($entryID,$this->bID));
-	
+		$cID = Page::getCurrentPage()->getCollectionID();
+		$data = $db->getRow("SELECT * FROM btReviewsEntries WHERE entryID=? AND bID=? AND cID=?",array($entryID,$this->bID,$cID));
 		$this->entryID 		= $data['entryID'];
 		$this->user_name 	= $data['user_name'];
 		$this->user_email 	= $data['user_email'];
@@ -412,8 +413,10 @@ class ReviewsBlockEntry {
 	*/		
 	private function adjustCountCache($number=false){
 		$ca 	= new Cache();
-		$db 	= Loader::db();			
-		$count = $ca->get('GuestBookCount',$this->bID);
+		$db 	= Loader::db();		
+		$cID	= Page::getCurrentPage()->getCollectionID();	
+		$count	= $ca->get('GuestBookCount',$this->bID);
+
 		if($count && $number){
 			$count += $number;				
 		}
@@ -421,13 +424,14 @@ class ReviewsBlockEntry {
 			$q = 'SELECT count(bID) as count
 			FROM btReviewsEntries
 			WHERE bID = ?
+			AND cID = ?
 			AND approved=1';				
 			$v = Array($this->bID);
 			$rs = $db->query($q,$v);
 			$row = $rs->FetchRow();
 			$count = $row['count'];
 		}			
-		$ca->set('GuestBookCount',$this->bID,$count);
+		$ca->set('GuestBookCount',$this->bID,$cID,$count);
 	}
 	
 
