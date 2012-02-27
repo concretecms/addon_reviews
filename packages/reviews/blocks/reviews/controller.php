@@ -24,10 +24,10 @@
 defined('C5_EXECUTE') or die(_("Access Denied."));
 class ReviewsBlockController extends BlockController {		
 	protected $btTable = 'btReviews';
-	protected $btInterfaceWidth = "300";
-	protected $btInterfaceHeight = "260";	
-	
+	protected $btInterfaceWidth = "400";
+	protected $btInterfaceHeight = "265";		
 	protected $btIncludeAll = 1;
+	protected $btWrapperClass = 'ccm-ui';
 	
 	/** 
 	 * Used for localization. If we want to localize the name/description we have to include this
