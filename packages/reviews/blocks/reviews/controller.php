@@ -426,7 +426,7 @@ class ReviewsBlockEntry {
 			WHERE bID = ?
 			AND cID = ?
 			AND approved=1';				
-			$v = Array($this->bID);
+			$v = Array($this->bID,$cID);
 			$rs = $db->query($q,$v);
 			$row = $rs->FetchRow();
 			$count = $row['count'];
