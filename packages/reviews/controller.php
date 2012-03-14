@@ -6,7 +6,7 @@ class ReviewsPackage extends Package {
 
 	protected $pkgHandle = 'reviews';
 	protected $appVersionRequired = '5.5';
-	protected $pkgVersion = '1.4dev';
+	protected $pkgVersion = '1.4';
 	
 	public function getPackageDescription() {
 		return t("Adds the ability to add ratings and comments to a page.");
