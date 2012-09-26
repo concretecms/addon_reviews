@@ -87,7 +87,7 @@ div.guestBook-entry {
 	<?php 
 	$u = new User();
 	$posts = $controller->getEntries();
-	$bp = $controller->getPermissionsObject(); 
+	$bp = $controller->getPermissionObject(); 
 	foreach($posts as $p) { ?>
 		<?php  if($p['approved'] || $bp->canWrite()) { ?>
 		<div class="guestBook-entry">

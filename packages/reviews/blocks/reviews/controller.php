@@ -46,6 +46,10 @@ class ReviewsBlockController extends BlockController {
 		$this->addHeaderItem($html->css('jquery.ui.css'));
 		$this->addHeaderItem($html->css('jquery.rating.css'));	
 	}	
+
+	public function view() {
+		$this->set('Entry', new ReviewsBlockEntry($this->bID));
+	}
 		
 	function delete() {
 		$ip = Loader::helper('validation/ip');
