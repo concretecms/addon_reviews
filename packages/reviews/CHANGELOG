@@ -1,3 +1,4 @@
+1.4.1dev - Updates for concrete5.6 and php 5.4
 1.4 - Fixed star rating calculation when block is added from page defaults, global areas and stacks
 
 1.3 - Updated add/edit ui for 5.5 + minor code cleanup.
