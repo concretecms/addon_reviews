@@ -48,7 +48,10 @@ class ReviewsBlockController extends BlockController {
 	}	
 
 	public function view() {
-		$this->set('Entry', new ReviewsBlockEntry($this->bID));
+		$sets = $this->getSets();
+		if (!isset($sets['Entry'])) {
+			$this->set('Entry', new ReviewsBlockEntry($this->bID));
+		}
 	}
 		
 	function delete() {
@@ -118,7 +121,7 @@ class ReviewsBlockController extends BlockController {
 	}
 	
 	/** 
-	 * Handles the form post for adding a new guest book entry
+	 * Handles the form post for adding a new guest book  
 	 *
 	*/	
 	function action_form_save_entry() {	
@@ -217,6 +220,10 @@ class ReviewsBlockController extends BlockController {
 				@$mh->sendMail(); 
 			} 
 		}
+		unset($_POST['email']);
+		unset($_POST['name']);
+		unset($_POST['rating']);
+		unset($_POST['commentText']);
 		return true;
 	}
 	
@@ -326,7 +333,7 @@ class ReviewsBlockController extends BlockController {
 	}	
 	
 	public function getAverageRating(){ 
-		return intval($this->averageRating);
+		return intval($this->calculateAverageRating());
 	}	
 
 } // end class def

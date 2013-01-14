@@ -1,5 +1,8 @@
-<?php  defined('C5_EXECUTE') or die(_("Access Denied.")); ?>
-<?php  global $c; ?><style>
+<?php  defined('C5_EXECUTE') or die(_("Access Denied.")); 
+global $c; 
+$form = Loader::helper('form');
+?>
+<style>
 
 .guestBook-wrapper { margin-top:32px; }
 
@@ -138,31 +141,42 @@ div.guestBook-entry {
 	<?php  } ?>
 	<?php  if($controller->displayGuestBookForm) { ?>
 		<?php 	
-		if( $controller->authenticationRequired && !$u->isLoggedIn() ){ ?>
+		if($controller->authenticationRequired && !$u->isLoggedIn() ){ ?>
 			<div><?php echo t('You must be logged in to leave a review.')?> <a href="<?php echo View::url("/login","forward",$c->getCollectionID())?>"><?php echo t('Login')?> &raquo;</a></div>
 		<?php  }else{ ?>	
 			<a name="guestBookForm-<?php echo $controller->bID?>"></a>
 			<div id="guestBook-formBlock-<?php echo $controller->bID?>" class="guestBook-formBlock">
 				<h4 class="guestBook-formBlock-title"><?php  echo t('Leave a Review')?></h4>
 				<form method="post" action="<?php echo $this->action('form_save_entry', '#guestBookForm-'.$controller->bID)?>">
-				<?php  if(isset($Entry->entryID)) { ?>
-					<input type="hidden" name="entryID" value="<?php echo $Entry->entryID?>" />
-				<?php  } ?>
+				<?php
+				if (isset($Entry->entryID)) {
+					echo $form->hidden('entryID',$Entry->entryID);
+				}
 				
-				<?php  if(!$controller->authenticationRequired){ ?>
-					<label for="name"><?php echo t('Name')?>:</label><?php echo (isset($errors['name'])?"<span class=\"error\">".$errors['name']."</span>":"")?><br />
-					<input type="text" name="name" value="<?php echo $Entry->user_name ?>" /> <br />
-					<label for="email"><?php echo t('Email')?>:</label><?php echo (isset($errors['email'])?"<span class=\"error\">".$errors['email']."</span>":"")?><br />
-					<input type="text" name="email" value="<?php echo $Entry->user_email ?>" /> <span class="note">(<?php echo t('Your email will not be publicly displayed.')?>)</span> <br />
-				<?php  } ?>
-		 <?php			
+				if(!$controller->authenticationRequired){
+					?>
+					<?=$form->label('name',t('Name:'))?>
+					<?=isset($errors['name'])?"<span class='error'>{$errors[name]}</span>":''?>
+					<br>
+					<?=$form->text('name',$Entry->user_name)?>
+					<br>
+
+					<?=$form->label('email',t('Email:'))?>
+					<?=isset($errors['email'])?"<span class='error'>{$errors[email]}</span>":''?>
+					<br>
+					<?=$form->text('email',$Entry->user_email)?>
+					<br>
+					<?php
+				}
 			/* 
 				<label for="rating"><?php echo t('Rating')?>:</label><?php echo (isset($errors['rating'])?"<span class=\"error\">".$errors['rating']."</span>":"")?><br />
 				<input type="text" name="rating" value="<?php echo $Entry->rating ?>" /><br />
 			*/	 ?>
 				
 				
-				<label for="rating"><?php echo t('Rating')?>:</label><?php echo (isset($errors['rating'])?"<span class=\"error\">".$errors['rating']."</span>":"")?><br />
+				<?=$form->label('rating',t('Rating:'))?>
+				<?=isset($errors['rating'])?"<span class='error'>{$errors[rating]}</span>":''?>
+				<br>
 				<?php  
 				$rt = Loader::helper('rating'); 
 				if($Entry->rating==-1 || !isset($Entry->rating)) $Entry->rating=95; 
@@ -171,7 +185,9 @@ div.guestBook-entry {
 				<br />
 							
 				<?php echo (isset($errors['commentText'])?"<br /><span class=\"error\">".$errors['commentText']."</span>":"")?>
-				<textarea name="commentText"><?php echo $Entry->commentText ?></textarea><br />
+
+				<?=$form->textarea('commentText',$Entry->commentText)?>
+				<br>
 				<?php 
 				if($controller->displayCaptcha) {
 					
