@@ -22,7 +22,7 @@
  *
  */
 defined('C5_EXECUTE') or die(_("Access Denied."));
-class ReviewsBlockController extends BlockController {		
+class ReviewsBlockController extends BlockController {
 	protected $btTable = 'btReviews';
 	protected $btInterfaceWidth = "400";
 	protected $btInterfaceHeight = "265";		
@@ -38,23 +38,21 @@ class ReviewsBlockController extends BlockController {
 	
 	public function getBlockTypeName() {
 		return t("Reviews");
-	}		
-	
-	public function __construct($obj = NULL){
-		$res = parent::__construct($obj);
-		$html = Loader::helper('html');	
-		$this->addHeaderItem($html->javascript('jquery.metadata.js'));		 
-		$this->addHeaderItem($html->javascript('jquery.rating.js'));
-		$this->addHeaderItem($html->css('jquery.ui.css'));
-		$this->addHeaderItem($html->css('jquery.rating.css'));
-		return $res;
 	}
 	
-	public function on_start(){
-		$html = Loader::helper('html');			
-		
-		//$this->addHeaderItem($html->css('jquery.rating.css'));
+	public function on_page_view() {
+		$html = Loader::helper('html');	
+		$this->addHeaderItem($html->javascript('jquery.rating.js'));
+		$this->addHeaderItem($html->css('jquery.ui.css'));
+		$this->addHeaderItem($html->css('jquery.rating.css'));	
 	}	
+
+	public function view() {
+		$sets = $this->getSets();
+		if (!isset($sets['Entry'])) {
+			$this->set('Entry', new ReviewsBlockEntry($this->bID));
+		}
+	}
 		
 	function delete() {
 		$ip = Loader::helper('validation/ip');
@@ -64,8 +62,7 @@ class ReviewsBlockController extends BlockController {
 		}
 		$E = new ReviewsBlockEntry($this->bID);
 		$bo = $this->getBlockObject();
-		global $c;
-		$E->removeAllEntries( $c->getCollectionID() );
+		$E->removeAllEntries($this->getCollectionObject()->getCollectionID() );
 		parent::delete();
 	}
 	
@@ -124,7 +121,7 @@ class ReviewsBlockController extends BlockController {
 	}
 	
 	/** 
-	 * Handles the form post for adding a new guest book entry
+	 * Handles the form post for adding a new guest book  
 	 *
 	*/	
 	function action_form_save_entry() {	
@@ -136,7 +133,7 @@ class ReviewsBlockController extends BlockController {
 
 		// get the cID from the block Object
 		$bo = $this->getBlockObject();
-		global $c;
+		$c = $this->getCollectionObject();
 		$cID = $c->getCollectionID();
 	
 		$v = Loader::helper('validation/strings');
@@ -223,6 +220,10 @@ class ReviewsBlockController extends BlockController {
 				@$mh->sendMail(); 
 			} 
 		}
+		unset($_POST['email']);
+		unset($_POST['name']);
+		unset($_POST['rating']);
+		unset($_POST['commentText']);
 		return true;
 	}
 	
@@ -315,9 +316,10 @@ class ReviewsBlockController extends BlockController {
 	}
 	
 	public function calculateAverageRating(){ 	
-		$db = Loader::db();		
-		$q = 'SELECT avg(rating) as count FROM btReviewsEntries WHERE bID = ? AND approved=1 AND rating>=0 AND rating<=100';				
-		$v = Array(intval($this->bID) );
+		$db = Loader::db();	
+		$cID = Page::getCurrentPage()->getCollectionID();
+		$q = 'SELECT avg(rating) as count FROM btReviewsEntries WHERE bID = ? AND cID = ? AND approved=1 AND rating>=0 AND rating<=100';				
+		$v = Array(intval($this->bID), intval($cID) );
 		$averageRating = $db->getOne($q,$v);
 		$this->averageRating=(intval($averageRating)>0) ? round($averageRating/10)*10 : 0;
 		return $this->averageRating;
@@ -331,7 +333,7 @@ class ReviewsBlockController extends BlockController {
 	}	
 	
 	public function getAverageRating(){ 
-		return intval($this->averageRating);
+		return intval($this->calculateAverageRating());
 	}	
 
 } // end class def
@@ -389,8 +391,8 @@ class ReviewsBlockEntry {
 	*/
 	function loadData($entryID) {
 		$db = Loader::db();
-		$data = $db->getRow("SELECT * FROM btReviewsEntries WHERE entryID=? AND bID=?",array($entryID,$this->bID));
-	
+		$cID = Page::getCurrentPage()->getCollectionID();
+		$data = $db->getRow("SELECT * FROM btReviewsEntries WHERE entryID=? AND bID=? AND cID=?",array($entryID,$this->bID,$cID));
 		$this->entryID 		= $data['entryID'];
 		$this->user_name 	= $data['user_name'];
 		$this->user_email 	= $data['user_email'];
@@ -422,8 +424,10 @@ class ReviewsBlockEntry {
 	*/		
 	private function adjustCountCache($number=false){
 		$ca 	= new Cache();
-		$db 	= Loader::db();			
-		$count = $ca->get('GuestBookCount',$this->bID);
+		$db 	= Loader::db();		
+		$cID	= Page::getCurrentPage()->getCollectionID();	
+		$count	= $ca->get('GuestBookCount',$this->bID);
+
 		if($count && $number){
 			$count += $number;				
 		}
@@ -431,13 +435,14 @@ class ReviewsBlockEntry {
 			$q = 'SELECT count(bID) as count
 			FROM btReviewsEntries
 			WHERE bID = ?
+			AND cID = ?
 			AND approved=1';				
-			$v = Array($this->bID);
+			$v = Array($this->bID,$cID);
 			$rs = $db->query($q,$v);
 			$row = $rs->FetchRow();
 			$count = $row['count'];
 		}			
-		$ca->set('GuestBookCount',$this->bID,$count);
+		$ca->set('GuestBookCount',$this->bID,$cID,$count);
 	}
 	
 
