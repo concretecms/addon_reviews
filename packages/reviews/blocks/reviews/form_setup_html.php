@@ -1,4 +1,4 @@
-<?php defined('C5_EXECUTE') or die(_("Access Denied.")); ?>
+<?php defined('C5_EXECUTE') or die("Access Denied."); ?>
   
 <fieldset class="form-stacked">
 
@@ -50,7 +50,7 @@
 </div><!--clearfix -->
  
 <div class="clearfix">
-	<?php echo $form->label('notifyEmail','Alert Email Address when Review Posted' );?>
+	<?php echo $form->label('notifyEmail',t('Alert Email Address when Review Posted'));?>
 	<div class="input">
 	<?php echo $form->text("notifyEmail", $notifyEmail)?>
 	</div><!--class="input"-->
