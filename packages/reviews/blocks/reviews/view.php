@@ -117,7 +117,12 @@ div.guestBook-entry {
 					if(!strlen($reviewedBy)) {
 						$reviewedBy = $ui->getUserName();
 					}
-					$reviewedOn = Loader::helper('date')->date(DATE_APP_GENERIC_MDY_FULL, strtotime($p['entryDate']));
+					if(version_compare(APP_VERSION, '5.6.0') >= 0) {
+						$reviewedOn = Loader::helper('date')->date(DATE_APP_GENERIC_MDY_FULL, strtotime($p['entryDate']));
+					}
+					else {
+						$reviewedOn = date('M dS, Y', strtotime($p['entryDate']));
+					}
 					echo t(/*i18n: %s is an username, %2$s is a date */'Reviewed by %1$s on %2$s', '<span class="userName">' . $reviewedBy . '</span>', '<span class="contentDate">' . $reviewedOn . '</span>');
 					?>
 				</div>
