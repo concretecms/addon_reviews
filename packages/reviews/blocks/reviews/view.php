@@ -1,4 +1,4 @@
-<?php  defined('C5_EXECUTE') or die(_("Access Denied.")); 
+<?php  defined('C5_EXECUTE') or die("Access Denied."); 
 global $c; 
 $form = Loader::helper('form');
 ?>
@@ -97,7 +97,7 @@ div.guestBook-entry {
 			<?php  if($bp->canWrite()) { ?> 
 					<div class="guestBook-manage-links">
 						<a href="<?php echo $this->action('loadEntry')."&entryID=".$p['entryID'];?>#guestBookForm"><?php echo t('Edit')?></a> | 
-						<a href="<?php echo $this->action('removeEntry')."&entryID=".$p['entryID'];?>" onclick="return confirm('<?php echo t("Are you sure you would like to remove this review?")?>');"><?php echo t('Remove')?></a> |
+						<a href="<?php echo $this->action('removeEntry')."&entryID=".$p['entryID'];?>" onclick="<?php echo Loader::helper('text')->specialchars('return confirm(' . Loader::helper('json')->encode(t("Are you sure you would like to remove this review?")) . ');'); ?>"><?php echo t('Remove')?></a> |
 						<?php  if($p['approved']) { ?>
 							<a href="<?php echo $this->action('unApproveEntry')."&entryID=".$p['entryID'];?>"><?php echo t('Un-Approve')?></a>
 						<?php  } else { ?>
@@ -106,21 +106,25 @@ div.guestBook-entry {
 					</div>
 				<?php  } ?>
 				<div class="contentByLine">	
-					<?php echo t('Reviewed by')?>
-					<span class="userName">
-						<?php 
-						if( intval($p['uID']) ){
-							$ui = UserInfo::getByID(intval($p['uID']));
-							if (is_object($ui)) {
-								echo $ui->getUserName();
-							}
-						}else echo $p['user_name'];
-						?>
-					</span> 
-					<?php echo t('on')?>
-					<span class="contentDate">
-						<?php echo date("M dS, Y",strtotime($p['entryDate']));?>
-					</span>
+					<?php
+					$reviewedBy = '';
+					if (intval($p['uID'])) {
+						$ui = UserInfo::getByID(intval($p['uID']));
+						if (is_object($ui)) {
+							$reviewedBy = $ui->getUserName();
+						}
+					}
+					if(!strlen($reviewedBy)) {
+						$reviewedBy = $ui->getUserName();
+					}
+					if(version_compare(APP_VERSION, '5.6.0') >= 0) {
+						$reviewedOn = Loader::helper('date')->date(DATE_APP_GENERIC_MDY_FULL, strtotime($p['entryDate']));
+					}
+					else {
+						$reviewedOn = date('M dS, Y', strtotime($p['entryDate']));
+					}
+					echo t(/*i18n: %s is an username, %2$s is a date */'Reviewed by %1$s on %2$s', '<span class="userName">' . $reviewedBy . '</span>', '<span class="contentDate">' . $reviewedOn . '</span>');
+					?>
 				</div>
 				<?php echo nl2br($p['commentText'])?>
 				<div class="ratingStarsWrap">
@@ -156,13 +160,13 @@ div.guestBook-entry {
 				if(!$controller->authenticationRequired){
 					?>
 					<?=$form->label('name',t('Name:'))?>
-					<?=isset($errors['name'])?"<span class='error'>{$errors[name]}</span>":''?>
+					<?=isset($errors['name'])?"<span class='error'>{$errors['name']}</span>":''?>
 					<br>
 					<?=$form->text('name',$Entry->user_name)?>
 					<br>
 
 					<?=$form->label('email',t('Email:'))?>
-					<?=isset($errors['email'])?"<span class='error'>{$errors[email]}</span>":''?>
+					<?=isset($errors['email'])?"<span class='error'>{$errors['email']}</span>":''?>
 					<br>
 					<?=$form->text('email',$Entry->user_email)?>
 					<br>
@@ -175,7 +179,7 @@ div.guestBook-entry {
 				
 				
 				<?=$form->label('rating',t('Rating:'))?>
-				<?=isset($errors['rating'])?"<span class='error'>{$errors[rating]}</span>":''?>
+				<?=isset($errors['rating'])?"<span class='error'>{$errors['rating']}</span>":''?>
 				<br>
 				<?php  
 				$rt = Loader::helper('rating'); 
